@@ -20,11 +20,16 @@ public class GameMap extends Fragment
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup ui, Bundle bundle)
+    public void onCreate(Bundle b)
     {
+        super.onCreate(b);
         settings = new Settings();
         settings.load(getActivity());
+    }
 
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup ui, Bundle bundle)
+    {
         View view = inflater.inflate(R.layout.fragment_map, ui, false);
 
         RecyclerView rv = (RecyclerView)view.findViewById(R.id.mapRecyclerView);

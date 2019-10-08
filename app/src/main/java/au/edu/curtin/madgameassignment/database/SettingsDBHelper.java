@@ -1,11 +1,11 @@
-package au.edu.curtin.madgameassignment.db;
+package au.edu.curtin.madgameassignment.database;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import au.edu.curtin.madgameassignment.db.Schema.SettingsTable;
+import au.edu.curtin.madgameassignment.database.Schema.SettingsTable;
 
 public class SettingsDBHelper extends SQLiteOpenHelper
 {

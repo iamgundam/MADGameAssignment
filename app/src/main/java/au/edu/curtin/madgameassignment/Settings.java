@@ -4,9 +4,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
-import au.edu.curtin.madgameassignment.db.Schema;
-import au.edu.curtin.madgameassignment.db.SettingsCursor;
-import au.edu.curtin.madgameassignment.db.SettingsDBHelper;
+import au.edu.curtin.madgameassignment.database.Schema;
+import au.edu.curtin.madgameassignment.database.SettingsCursor;
+import au.edu.curtin.madgameassignment.database.SettingsDBHelper;
 
 //Built from MAD P04 Local Data, to implement database interactions.
 public class Settings

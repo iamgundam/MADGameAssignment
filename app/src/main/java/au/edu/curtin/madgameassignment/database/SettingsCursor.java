@@ -1,4 +1,4 @@
-package au.edu.curtin.madgameassignment.db;
+package au.edu.curtin.madgameassignment.database;
 
 import android.database.Cursor;
 import android.database.CursorWrapper;

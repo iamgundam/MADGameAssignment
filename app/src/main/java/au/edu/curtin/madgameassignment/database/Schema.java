@@ -1,4 +1,4 @@
-package au.edu.curtin.madgameassignment.db;
+package au.edu.curtin.madgameassignment.database;
 
 public class Schema
 {
@@ -7,8 +7,8 @@ public class Schema
         public static final String NAME = "settings";
         public static class Cols
         {
-            public static final String MAPH = "mapH";
-            public static final String MAPW = "mapW";
+            public static final String MAPH = "maph";
+            public static final String MAPW = "mapw";
             public static final String INITMON = "initialMoney";
             public static final String SALARY  = "salary";
         }
