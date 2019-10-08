@@ -16,16 +16,20 @@ import android.widget.ImageView;
 public class GameMap extends Fragment
 {
     Selector selector;
+    Settings settings;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup ui, Bundle bundle)
     {
+        settings = new Settings();
+
         View view = inflater.inflate(R.layout.fragment_map, ui, false);
 
         RecyclerView rv = (RecyclerView)view.findViewById(R.id.mapRecyclerView);
         rv.setLayoutManager(new GridLayoutManager(
                 getActivity(),
-                MapData.HEIGHT,
+                settings.getMapH(),
                 GridLayoutManager.HORIZONTAL,
                 false
         ));
@@ -53,7 +57,7 @@ public class GameMap extends Fragment
         @Override
         public int getItemCount()
         {
-            return data.HEIGHT * data.WIDTH;
+            return settings.getMapH() * settings.getMapW();
         }
 
         @Override
@@ -66,31 +70,22 @@ public class GameMap extends Fragment
         @Override
         public void onBindViewHolder(MapViewHolder vh, int index)
         {
-            int row = index % MapData.HEIGHT;
-            int col = index / MapData.HEIGHT;
+            int row = index % settings.getMapH();
+            int col = index / settings.getMapH();
             vh.bind(data, row, col);
         }
     }
 
     private class MapViewHolder extends RecyclerView.ViewHolder
     {
-        private ImageView northwest;
-        private ImageView northeast;
-        private ImageView southeast;
-        private ImageView southwest;
         private ImageView structure;
 
         public MapViewHolder(LayoutInflater li, ViewGroup parent)
         {
             super(li.inflate(R.layout.grid_cell, parent, false));
 
-            northwest = (ImageView)itemView.findViewById(R.id.northwest);
-            northeast = (ImageView)itemView.findViewById(R.id.northeast);
-            southeast = (ImageView)itemView.findViewById(R.id.southeast);
-            southwest = (ImageView)itemView.findViewById(R.id.southwest);
-            structure = (ImageView)itemView.findViewById(R.id.structure);
 
-            int size = parent.getMeasuredHeight() / MapData.HEIGHT +1;
+            int size = parent.getMeasuredHeight() / settings.getMapH() +1;
             ViewGroup.LayoutParams lp = itemView.getLayoutParams();
             lp.width = size;
             lp.height = size;
@@ -102,10 +97,7 @@ public class GameMap extends Fragment
             final int frow = row;
             final int fcol = col;
 
-            northwest.setImageResource(data.get(row, col).getNorthWest());
-            northeast.setImageResource(data.get(row, col).getNorthEast());
-            southwest.setImageResource(data.get(row, col).getSouthWest());
-            southeast.setImageResource(data.get(row, col).getSouthEast());
+            structure = (ImageView)itemView.findViewById(R.id.structure);
 
             building = data.get(row, col).getStructure();
             if(building != null)
