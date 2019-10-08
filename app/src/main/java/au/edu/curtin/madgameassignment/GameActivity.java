@@ -8,9 +8,6 @@ import android.os.Bundle;
 
 public class GameActivity extends AppCompatActivity
 {
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -19,7 +16,6 @@ public class GameActivity extends AppCompatActivity
 
         //Fragments
         FragmentManager fm = getSupportFragmentManager();
-
 
         //Selector fragment
         Selector fragSel = (Selector)fm.findFragmentById(R.id.selector);
@@ -42,8 +38,8 @@ public class GameActivity extends AppCompatActivity
 
     public static Intent getIntent(Context c)
     {
-        Intent intent = new Intent(c, GameActivity.class);
-        return intent;
+        Intent i = new Intent(c, GameActivity.class);
+        return i;
     }
 
 }

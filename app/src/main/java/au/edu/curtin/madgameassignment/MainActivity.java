@@ -30,6 +30,14 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        settingsButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                startActivity(SettingsActivity.getIntent(MainActivity.this));
+            }
+        });
 
     }
 }
