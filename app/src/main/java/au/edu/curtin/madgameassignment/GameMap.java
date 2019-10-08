@@ -23,6 +23,7 @@ public class GameMap extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup ui, Bundle bundle)
     {
         settings = new Settings();
+        settings.load(getActivity());
 
         View view = inflater.inflate(R.layout.fragment_map, ui, false);
 

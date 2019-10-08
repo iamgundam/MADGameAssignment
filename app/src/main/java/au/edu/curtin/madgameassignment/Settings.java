@@ -1,7 +1,19 @@
 package au.edu.curtin.madgameassignment;
 
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+
+import au.edu.curtin.madgameassignment.db.Schema;
+import au.edu.curtin.madgameassignment.db.SettingsCursor;
+import au.edu.curtin.madgameassignment.db.SettingsDBHelper;
+
+//Built from MAD P04 Local Data, to implement database interactions.
 public class Settings
 {
+    //Database functionality
+    private SQLiteDatabase db;
+
     //Changeable settings
     private int mapW;
     private int mapH;
@@ -17,14 +29,60 @@ public class Settings
     private static final int commercialCost    = 500;
     private static final int roadCost          = 20;
 
-
+    //Empty default, load must be called by context
     public Settings()
+    { }
+
+    //Fetches settings information from the database
+    public void load(Context c)
     {
-        mapW = 50;
-        mapH = 10;
-        initialMoney = 1000;
-        salary = 10;
+        //Retrieve and open database
+        this.db = new SettingsDBHelper(c.getApplicationContext()).getWritableDatabase();
+
+        //Create cursor, query to retrieve everything from table
+        SettingsCursor cursor = new SettingsCursor(
+                db.query(Schema.SettingsTable.NAME,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null
+                ));
+
+        //Get settings from cursor and update fields.
+        try
+        {
+            cursor.moveToFirst();
+
+            //'getSettings' returns array of int values relating to the respective
+            //class field values. Order is same as declared.
+            int[] in = cursor.getSettings();
+            this.mapH = in[0];
+            this.mapW = in[1];
+            this.initialMoney = in[2];
+            this.salary = in[3];
+        }
+        finally
+        {
+            cursor.close();
+        }
     }
+
+    //Updates saved settings by updating the database with current values.
+    public void update()
+    {
+        ContentValues cv = new ContentValues();
+        cv.put(Schema.SettingsTable.Cols.MAPH, this.mapH);
+        cv.put(Schema.SettingsTable.Cols.MAPW, this.mapW);
+        cv.put(Schema.SettingsTable.Cols.INITMON, this.initialMoney);
+        cv.put(Schema.SettingsTable.Cols.SALARY,  this.salary);
+
+        //Technically updates ALL rows, sufficient to update our single settings row.
+        db.update(Schema.SettingsTable.NAME, cv, null, null);
+    }
+
+    //Getters and setters --------------------------------------------------------------------------
 
     public void setMapH(int mapH)
     {
@@ -45,7 +103,6 @@ public class Settings
     {
         this.salary = salary;
     }
-
 
     public int getMapH()
     {
