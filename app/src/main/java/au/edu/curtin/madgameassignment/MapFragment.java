@@ -11,13 +11,18 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 
 public class MapFragment extends Fragment
 {
-    Selector selector;
-    Settings settings;
+    private Selector selector;
+    private Settings settings;
+    private int choice;
 
+    public static final int BUILD = 0;
+    public static final int DEMOLISH = 1;
+    public static final int INFO = 2;
 
     @Override
     public void onCreate(Bundle b)
@@ -25,6 +30,8 @@ public class MapFragment extends Fragment
         super.onCreate(b);
         settings = new Settings();
         settings.load(getActivity());
+        choice = BUILD; //Default choice
+
     }
 
     @Override
@@ -129,16 +136,15 @@ public class MapFragment extends Fragment
                 public void onClick(View view)
                 {
 
-                    switch(selector.getChoice())
+                    switch(choice)
                     {
-                        case Selector.BUILD:
+                        case BUILD:
                             build();
                         break;
 
-                        /*
-                        case Selector.DEMOLISH:
-
-                        break; */
+                        case DEMOLISH:
+                            demolish();
+                        break;
                     }
 
                 }
@@ -148,11 +154,12 @@ public class MapFragment extends Fragment
                 {
                     Structure selected;
                     MapData data = MapData.get();
-                    MapElement current, up, down, left, right;
+                    MapElement current = data.get(frow, fcol);
 
                     //Default selection is build, have to check if structure has been selected
+                    //Must also check if existing structure on tile, can only build on empty space
                     selected = selector.getSelected();
-                    if(selected != null)
+                    if(selected != null && (current.getStructure() == null))
                     {
                         //If structure to be built is not a road, check for adjacent road
                         if(!(selected instanceof Road))
@@ -161,32 +168,74 @@ public class MapFragment extends Fragment
                             {
                                 //Update grid image to structure, then update map[][].
                                 structure.setImageResource(selected.getDrawableId());
-                                data.get(frow, fcol).setStructure(selected);
+                                current.setStructure(selected);
                             }
                         }
-                        else //Is a road, simply add it to the map.
+                        //Else, if there is no structure currently here, build the road.
+                        else if(current.getStructure() == null)
                         {
                             structure.setImageResource(selected.getDrawableId());
-                            data.get(frow, fcol).setStructure(selected);
+                            current.setStructure(selected);
                         }
                     }
                 }//end build
+
+                //Demolishes any building or any road with no buildings adjacent.
+                public void demolish()
+                {
+                    Structure selected;
+                    MapData data = MapData.get();
+                    MapElement current = data.get(frow, fcol);
+
+                    if(current.getStructure() != null)
+                    {
+                        //If road is to be deleted, check for adjacent buildings
+                        if(current.getStructure() instanceof Road)
+                        {
+                            if(!hasAdjacentBuilding())
+                            {
+                                //Update grid image to structure, then update map[][].
+                                structure.setImageResource(StructureData.DRAWABLES[0]);
+                                current.setStructure(null);
+                            }
+                            //Else, do not delete.
+                        }
+                        else //Simply delete the building.
+                        {
+                            structure.setImageResource(StructureData.DRAWABLES[0]);
+                            current.setStructure(null);
+                        }
+
+                    }
+                }
 
                 //Check whether the surrounding tiles have a road.
                 public boolean hasAdjacentRoad()
                 {
                     MapData data = MapData.get();
-                    MapElement current, adj;
+                    MapElement adj;
                     boolean valid;
 
                     valid = false;
-                    if (data.get(frow, fcol).getStructure() == null)
+                    try //Check right.
                     {
-                        try //Check right.
+                        //Valid if road structure found above this tile
+                        adj = data.get(frow, fcol+1);
+                        if(adj.getStructure() != null && adj.getStructure() instanceof Road)
                         {
-                            //Valid if road structure found above this tile
-                            adj = data.get(frow, fcol+1);
-                            if(adj.getStructure() != null && adj.getStructure() instanceof Road)
+                            valid = true;
+                        }
+                    }
+                    catch (ArrayIndexOutOfBoundsException e)
+                    {
+                        //Do nothing and try other tiles.
+                    }
+                    if(!valid)
+                    {
+                        try //Check left.
+                        {
+                            adj = data.get(frow, fcol-1);
+                            if (adj.getStructure() != null && adj.getStructure() instanceof Road)
                             {
                                 valid = true;
                             }
@@ -195,59 +244,116 @@ public class MapFragment extends Fragment
                         {
                             //Do nothing and try other tiles.
                         }
-
-                        if(!valid)
-                        {
-                            try //Check left.
-                            {
-                                adj = data.get(frow, fcol-1);
-                                if (adj.getStructure() != null && adj.getStructure() instanceof Road)
-                                {
-                                    valid = true;
-                                }
-                            }
-                            catch (ArrayIndexOutOfBoundsException e)
-                            {
-                                //Do nothing and try other tiles.
-                            }
-                        }
-
-                        if(!valid)
-                        {
-                            try //Check above.
-                            {
-                                adj = data.get(frow -1, fcol);
-                                if (adj.getStructure() != null && adj.getStructure() instanceof Road)
-                                {
-                                    valid = true;
-                                }
-                            }
-                            catch (ArrayIndexOutOfBoundsException e)
-                            {
-                                //Do nothing and try other tiles.
-                            }
-                        }
-
-                        if(!valid)
-                        {
-                            try //Check below.
-                            {
-                                adj = data.get(frow +1, fcol);
-                                if (adj.getStructure() != null && adj.getStructure() instanceof Road)
-                                {
-                                    valid = true;
-                                }
-                            }
-                            catch (ArrayIndexOutOfBoundsException e)
-                            {
-                                //Do nothing.
-                            }
-                        }
-
                     }
-
+                    if(!valid)
+                    {
+                        try //Check above.
+                        {
+                            adj = data.get(frow -1, fcol);
+                            if (adj.getStructure() != null && adj.getStructure() instanceof Road)
+                            {
+                                valid = true;
+                            }
+                        }
+                        catch (ArrayIndexOutOfBoundsException e)
+                        {
+                            //Do nothing and try other tiles.
+                        }
+                    }
+                    if(!valid)
+                    {
+                        try //Check below.
+                        {
+                            adj = data.get(frow +1, fcol);
+                            if (adj.getStructure() != null && adj.getStructure() instanceof Road)
+                            {
+                                valid = true;
+                            }
+                        }
+                        catch (ArrayIndexOutOfBoundsException e)
+                        {
+                            //Do nothing.
+                        }
+                    }
                     return valid;
                 }//end hasAdjacentRoad
+
+                //Check whether the surrounding tiles have a Commercial or Residential building.
+                public boolean hasAdjacentBuilding()
+                {
+                    MapData data = MapData.get();
+                    MapElement adj;
+                    boolean valid;
+
+                    valid = false;
+                     try //Check right.
+                     {
+                         //Valid if either building type found above this tile
+                         adj = data.get(frow, fcol+1);
+                         if(adj.getStructure() != null &&
+                                 (adj.getStructure() instanceof Commercial ||
+                                  adj.getStructure() instanceof Residential))
+                            {
+                                valid = true;
+                            }
+                     }
+                     catch (ArrayIndexOutOfBoundsException e)
+                     {
+                         //Do nothing and try other tiles.
+                     }
+                     if(!valid)
+                     {
+                         try //Check left.
+                         {
+                             adj = data.get(frow, fcol-1);
+                             if(adj.getStructure() != null &&
+                                     (adj.getStructure() instanceof Commercial ||
+                                      adj.getStructure() instanceof Residential))
+                             {
+                                    valid = true;
+                             }
+                         }
+                         catch (ArrayIndexOutOfBoundsException e)
+                         {
+                             //Do nothing and try other tiles.
+                         }
+                     }
+                     if(!valid)
+                     {
+                         try //Check above.
+                         {
+                                adj = data.get(frow -1, fcol);
+                                if(adj.getStructure() != null &&
+                                        (adj.getStructure() instanceof Commercial ||
+                                         adj.getStructure() instanceof Residential))
+                                {
+                                    valid = true;
+                                }
+                            }
+                            catch (ArrayIndexOutOfBoundsException e)
+                            {
+                                //Do nothing and try other tiles.
+                            }
+                        }
+                     if(!valid)
+                     {
+                         try //Check below.
+                         {
+                             adj = data.get(frow +1, fcol);
+                             if(adj.getStructure() != null &&
+                                     (adj.getStructure() instanceof Commercial ||
+                                      adj.getStructure() instanceof Residential))
+                             {
+                                 valid = true;
+                             }
+                         }
+                         catch (ArrayIndexOutOfBoundsException e)
+                         {
+                             //Do nothing.
+                         }
+                     }
+                    return valid;
+                }//end hasAdjacentBuilding
 
             });//end onClickListener
 
@@ -255,8 +361,18 @@ public class MapFragment extends Fragment
 
     }
 
-    public void setSelector(Selector in)
+    public void setSelector(Selector selector)
     {
-        selector = in;
+        this.selector = selector;
+    }
+
+    public int getChoice()
+    {
+        return choice;
+    }
+
+    public void setChoice(int choice)
+    {
+        this.choice = choice;
     }
 }

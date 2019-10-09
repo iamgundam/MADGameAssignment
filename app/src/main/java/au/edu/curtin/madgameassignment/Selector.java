@@ -17,18 +17,7 @@ import org.w3c.dom.Text;
 
 public class Selector extends Fragment
 {
-    private int choice;
     private Structure selected;
-
-    public static final int BUILD = 0;
-    public static final int DEMOLISH = 1;
-    public static final int INFO = 2;
-
-    public Selector()
-    {
-        //Default choice set to BUILD
-        choice = 0;
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup ui, Bundle bundle)
@@ -121,13 +110,4 @@ public class Selector extends Fragment
         this.selected = selected;
     }
 
-    public int getChoice()
-    {
-        return choice;
-    }
-
-    public void setChoice(int choice)
-    {
-        this.choice = choice;
-    }
 }
