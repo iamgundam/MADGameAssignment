@@ -3,6 +3,7 @@ package au.edu.curtin.madgameassignment;
 public class MapData
 {
     private MapElement[][] grid;
+    private boolean update; //Set by SettingsActivity when an update to map is required
 
     private static MapData instance = null;
 
@@ -17,6 +18,7 @@ public class MapData
 
     private MapData(int h, int w)
     {
+        update = false;
         grid = new MapElement[h][w];
 
         //Fill new map with empty grass blocks
@@ -38,5 +40,16 @@ public class MapData
     {
         return grid[i][j];
     }
+
+    public boolean hasUpdate()
+    {
+        return update;
+    }
+
+    public void setUpdate(boolean update)
+    {
+        this.update = update;
+    }
+
 }
 

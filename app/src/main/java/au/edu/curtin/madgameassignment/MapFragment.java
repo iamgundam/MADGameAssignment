@@ -13,7 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-public class GameMap extends Fragment
+public class MapFragment extends Fragment
 {
     Selector selector;
     Settings settings;
@@ -42,6 +42,12 @@ public class GameMap extends Fragment
 
         //Ready data
         MapData map = MapData.get();
+
+        //Restart the game if settings have been changed.
+        if(map.hasUpdate())
+        {
+            map.changeMapSize(settings.getMapH(), settings.getMapW());
+        }
 
         AdapterMap adapter = new AdapterMap();
 

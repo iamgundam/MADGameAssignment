@@ -6,7 +6,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class GameActivity extends AppCompatActivity
+public class MapActivity extends AppCompatActivity
 {
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -26,10 +26,10 @@ public class GameActivity extends AppCompatActivity
         }
 
         //Game map fragment
-        GameMap fragMap    = (GameMap)fm.findFragmentById(R.id.map);
+        MapFragment fragMap    = (MapFragment)fm.findFragmentById(R.id.map);
         if(fragMap == null)
         {
-            fragMap = new GameMap();
+            fragMap = new MapFragment();
             fragMap.setSelector(fragSel);
             fm.beginTransaction().add(R.id.map, fragMap).commit();
         }
@@ -38,7 +38,7 @@ public class GameActivity extends AppCompatActivity
 
     public static Intent getIntent(Context c)
     {
-        Intent i = new Intent(c, GameActivity.class);
+        Intent i = new Intent(c, MapActivity.class);
         return i;
     }
 
