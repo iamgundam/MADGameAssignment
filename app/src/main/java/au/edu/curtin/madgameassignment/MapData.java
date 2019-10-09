@@ -37,6 +37,7 @@ public class MapData
     }
 
     public MapElement get(int i, int j)
+            throws ArrayIndexOutOfBoundsException
     {
         return grid[i][j];
     }

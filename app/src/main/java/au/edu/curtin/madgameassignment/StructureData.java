@@ -28,26 +28,27 @@ public class StructureData
     };
 
     private List<Structure> structureList = Arrays.asList(new Structure[] {
-            new Structure(R.drawable.ic_building1, "Residential"),
-            new Structure(R.drawable.ic_building8, "Commercial"),
-            new Structure(R.drawable.ic_road_ns, "Road"),
-            new Structure(R.drawable.ic_road_ew, "Road"),
-            new Structure(R.drawable.ic_road_nsew, "Road"),
-            new Structure(R.drawable.ic_road_ne, "Road"),
-            new Structure(R.drawable.ic_road_nw, "Road"),
-            new Structure(R.drawable.ic_road_se, "Road"),
-            new Structure(R.drawable.ic_road_sw, "Road"),
-            new Structure(R.drawable.ic_road_n, "Road"),
-            new Structure(R.drawable.ic_road_e, "Road"),
-            new Structure(R.drawable.ic_road_s, "Road"),
-            new Structure(R.drawable.ic_road_w, "Road"),
-            new Structure(R.drawable.ic_road_nse, "Road"),
-            new Structure(R.drawable.ic_road_nsw, "Road"),
-            new Structure(R.drawable.ic_road_new, "Road"),
-            new Structure(R.drawable.ic_road_sew, "Road"),
+            new Residential(R.drawable.ic_building1, "Residential"),
+            new Commercial(R.drawable.ic_building8, "Commercial"),
+            new Road(R.drawable.ic_road_ns, "Road"),
+            new Road(R.drawable.ic_road_ew, "Road"),
+            new Road(R.drawable.ic_road_nsew, "Road"),
+            new Road(R.drawable.ic_road_ne, "Road"),
+            new Road(R.drawable.ic_road_nw, "Road"),
+            new Road(R.drawable.ic_road_se, "Road"),
+            new Road(R.drawable.ic_road_sw, "Road"),
+            new Road(R.drawable.ic_road_n, "Road"),
+            new Road(R.drawable.ic_road_e, "Road"),
+            new Road(R.drawable.ic_road_s, "Road"),
+            new Road(R.drawable.ic_road_w, "Road"),
+            new Road(R.drawable.ic_road_nse, "Road"),
+            new Road(R.drawable.ic_road_nsw, "Road"),
+            new Road(R.drawable.ic_road_new, "Road"),
+            new Road(R.drawable.ic_road_sew, "Road"),
     });
 
     private static StructureData instance = null;
+
 
     public static StructureData get()
     {

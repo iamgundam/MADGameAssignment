@@ -17,7 +17,18 @@ import org.w3c.dom.Text;
 
 public class Selector extends Fragment
 {
-    Structure selected;
+    private int choice;
+    private Structure selected;
+
+    public static final int BUILD = 0;
+    public static final int DEMOLISH = 1;
+    public static final int INFO = 2;
+
+    public Selector()
+    {
+        //Default choice set to BUILD
+        choice = 0;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup ui, Bundle bundle)
@@ -88,13 +99,13 @@ public class Selector extends Fragment
             building.setImageResource(data.get(index).getDrawableId());
             buildingName.setText(data.get(index).getLabel());
 
-            //Listens for clicks and sets current structure to place
+            //Sets 'selected' to the structure clicked on by user
             building.setOnClickListener(new View.OnClickListener()
             {
                 @Override
                 public void onClick(View view)
                 {
-                    selected = data.get(i);
+                    setSelected(data.get(i));
                 }
             });
         }
@@ -103,5 +114,20 @@ public class Selector extends Fragment
     public Structure getSelected()
     {
         return selected;
+    }
+
+    public void setSelected(Structure selected)
+    {
+        this.selected = selected;
+    }
+
+    public int getChoice()
+    {
+        return choice;
+    }
+
+    public void setChoice(int choice)
+    {
+        this.choice = choice;
     }
 }

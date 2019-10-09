@@ -4,10 +4,11 @@ package au.edu.curtin.madgameassignment;
  * Represents a possible structure to be placed on the map. A structure simply contains a drawable
  * int reference, and a string label to be shown in the selector.
  */
-public class Structure
+public abstract class Structure
 {
     private final int drawableId;
     private String label;
+
 
     public Structure(int drawableId, String label)
     {

@@ -111,35 +111,145 @@ public class MapFragment extends Fragment
 
             structure = (ImageView)itemView.findViewById(R.id.structure);
 
+            //Sets the appropriate structure to this grid cell.
             building = data.get(row, col).getStructure();
-            if(building != null)
+            if(building != null) //If structure found, display its image.
             {
                 structure.setImageResource(building.getDrawableId());
             }
-            else
+            else //No structure found, so draw nothing.
             {
                 structure.setImageResource(StructureData.DRAWABLES[0]);
-
             }
 
+            //On click behaviour
             structure.setOnClickListener(new View.OnClickListener()
             {
                 @Override
                 public void onClick(View view)
                 {
-                    MapData data = MapData.get();
-                    Structure selected;
 
-                    selected = selector.getSelected();
-
-                    if(selected != null)
+                    switch(selector.getChoice())
                     {
-                        structure.setImageResource(selected.getDrawableId());
-                        data.get(frow, fcol).setStructure(selector.getSelected());
+                        case Selector.BUILD:
+                            build();
+                        break;
+
+                        /*
+                        case Selector.DEMOLISH:
+
+                        break; */
                     }
 
                 }
-            });
+
+                //Adds the currently selected structure to the map if valid.
+                public void build()
+                {
+                    Structure selected;
+                    MapData data = MapData.get();
+                    MapElement current, up, down, left, right;
+
+                    //Default selection is build, have to check if structure has been selected
+                    selected = selector.getSelected();
+                    if(selected != null)
+                    {
+                        //If structure to be built is not a road, check for adjacent road
+                        if(!(selected instanceof Road))
+                        {
+                            if (hasAdjacentRoad())
+                            {
+                                //Update grid image to structure, then update map[][].
+                                structure.setImageResource(selected.getDrawableId());
+                                data.get(frow, fcol).setStructure(selected);
+                            }
+                        }
+                        else //Is a road, simply add it to the map.
+                        {
+                            structure.setImageResource(selected.getDrawableId());
+                            data.get(frow, fcol).setStructure(selected);
+                        }
+                    }
+                }//end build
+
+                //Check whether the surrounding tiles have a road.
+                public boolean hasAdjacentRoad()
+                {
+                    MapData data = MapData.get();
+                    MapElement current, adj;
+                    boolean valid;
+
+                    valid = false;
+                    if (data.get(frow, fcol).getStructure() == null)
+                    {
+                        try //Check right.
+                        {
+                            //Valid if road structure found above this tile
+                            adj = data.get(frow, fcol+1);
+                            if(adj.getStructure() != null && adj.getStructure() instanceof Road)
+                            {
+                                valid = true;
+                            }
+                        }
+                        catch (ArrayIndexOutOfBoundsException e)
+                        {
+                            //Do nothing and try other tiles.
+                        }
+
+                        if(!valid)
+                        {
+                            try //Check left.
+                            {
+                                adj = data.get(frow, fcol-1);
+                                if (adj.getStructure() != null && adj.getStructure() instanceof Road)
+                                {
+                                    valid = true;
+                                }
+                            }
+                            catch (ArrayIndexOutOfBoundsException e)
+                            {
+                                //Do nothing and try other tiles.
+                            }
+                        }
+
+                        if(!valid)
+                        {
+                            try //Check above.
+                            {
+                                adj = data.get(frow -1, fcol);
+                                if (adj.getStructure() != null && adj.getStructure() instanceof Road)
+                                {
+                                    valid = true;
+                                }
+                            }
+                            catch (ArrayIndexOutOfBoundsException e)
+                            {
+                                //Do nothing and try other tiles.
+                            }
+                        }
+
+                        if(!valid)
+                        {
+                            try //Check below.
+                            {
+                                adj = data.get(frow +1, fcol);
+                                if (adj.getStructure() != null && adj.getStructure() instanceof Road)
+                                {
+                                    valid = true;
+                                }
+                            }
+                            catch (ArrayIndexOutOfBoundsException e)
+                            {
+                                //Do nothing.
+                            }
+                        }
+
+                    }
+
+                    return valid;
+                }//end hasAdjacentRoad
+
+            });//end onClickListener
 
         }
 
