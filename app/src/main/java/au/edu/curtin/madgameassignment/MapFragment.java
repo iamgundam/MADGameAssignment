@@ -1,6 +1,7 @@
 package au.edu.curtin.madgameassignment;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.media.Image;
 import android.net.Uri;
@@ -13,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+
+import au.edu.curtin.madgameassignment.activity.InfoActivity;
 
 public class MapFragment extends Fragment
 {
@@ -113,6 +116,7 @@ public class MapFragment extends Fragment
         public void bind(MapData data, int row, int col)
         {
             Structure building;
+            Bitmap custom;
             final int frow = row;
             final int fcol = col;
 
@@ -120,9 +124,19 @@ public class MapFragment extends Fragment
 
             //Sets the appropriate structure to this grid cell.
             building = data.get(row, col).getStructure();
-            if(building != null) //If structure found, display its image.
+            if(building != null) //Grid cell can have no structure.
             {
-                structure.setImageResource(building.getDrawableId());
+                //Set custom if available.
+                custom = data.get(row, col).getCustomImage();
+                if(custom != null)
+                {
+                    structure.setImageBitmap(custom);
+                }
+                else //else, use default image.
+                {
+                    structure.setImageResource(building.getDrawableId());
+                }
+
             }
             else //No structure found, so draw nothing.
             {
@@ -144,6 +158,10 @@ public class MapFragment extends Fragment
 
                         case DEMOLISH:
                             demolish();
+                        break;
+
+                        case INFO:
+                            info();
                         break;
                     }
 
@@ -169,6 +187,7 @@ public class MapFragment extends Fragment
                                 //Update grid image to structure, then update map[][].
                                 structure.setImageResource(selected.getDrawableId());
                                 current.setStructure(selected);
+                                current.setOwnerName(selected.getLabel());
                             }
                         }
                         //Else, if there is no structure currently here, build the road.
@@ -176,6 +195,7 @@ public class MapFragment extends Fragment
                         {
                             structure.setImageResource(selected.getDrawableId());
                             current.setStructure(selected);
+                            current.setOwnerName(selected.getLabel());
                         }
                     }
                 }//end build
@@ -197,6 +217,7 @@ public class MapFragment extends Fragment
                                 //Update grid image to structure, then update map[][].
                                 structure.setImageResource(StructureData.DRAWABLES[0]);
                                 current.setStructure(null);
+                                current.setOwnerName(null);
                             }
                             //Else, do not delete.
                         }
@@ -204,8 +225,21 @@ public class MapFragment extends Fragment
                         {
                             structure.setImageResource(StructureData.DRAWABLES[0]);
                             current.setStructure(null);
+                            current.setOwnerName(null);
                         }
 
+                    }
+                }
+
+                //Starts info activity and sends the tile information.
+                public void info()
+                {
+                    MapData data = MapData.get();
+
+                    //Check if structure exists to retrieve info on.
+                    if(data.get(frow, fcol).getStructure() != null)
+                    {
+                        startActivity(InfoActivity.getIntent(getContext(), frow, fcol));
                     }
                 }
 

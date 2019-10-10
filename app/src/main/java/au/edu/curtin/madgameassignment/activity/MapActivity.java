@@ -1,4 +1,4 @@
-package au.edu.curtin.madgameassignment;
+package au.edu.curtin.madgameassignment.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +9,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import au.edu.curtin.madgameassignment.MapFragment;
+import au.edu.curtin.madgameassignment.R;
+import au.edu.curtin.madgameassignment.Selector;
 
 
 public class MapActivity extends AppCompatActivity
@@ -24,7 +27,7 @@ public class MapActivity extends AppCompatActivity
 
         //Callbacks
         final Button demolishButton = (Button)findViewById(R.id.demolishButton);
-        Button infoButton = (Button)findViewById(R.id.infoButton);
+        final Button infoButton = (Button)findViewById(R.id.infoButton);
 
         //Fragments
         FragmentManager fm = getSupportFragmentManager();
@@ -62,15 +65,48 @@ public class MapActivity extends AppCompatActivity
                 //Else, set mode to demolish.
                 else
                 {
+                    //If switching from info to demolish, change info colour to deactivate.
+                    if(choice == MapFragment.INFO)
+                    {
+                        infoButton.setBackgroundColor(Color.LTGRAY);
+                    }
+
                     fragMap.setChoice(MapFragment.DEMOLISH);
                     demolishButton.setBackgroundColor(Color.RED);
-                }
 
+                }
+            }
+        });
+
+        infoButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                int choice = fragMap.getChoice();
+
+                //If choice is already on info, return to build mode.
+                if(choice == MapFragment.INFO)
+                {
+                    fragMap.setChoice(MapFragment.BUILD);
+                    infoButton.setBackgroundColor(Color.LTGRAY);
+                }
+                //Else, set mode to info.
+                else
+                {
+                    //If switching from demolish to info, change demolish colour to deactivate.
+                    if(choice == MapFragment.DEMOLISH)
+                    {
+                        demolishButton.setBackgroundColor(Color.LTGRAY);
+                    }
+
+                    fragMap.setChoice(MapFragment.INFO);
+                    infoButton.setBackgroundColor(Color.YELLOW);
+                }
             }
         });
 
     }
-
 
     public static Intent getIntent(Context c)
     {
