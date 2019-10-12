@@ -8,26 +8,47 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
+import au.edu.curtin.madgameassignment.GameData;
 import au.edu.curtin.madgameassignment.MapFragment;
 import au.edu.curtin.madgameassignment.R;
 import au.edu.curtin.madgameassignment.Selector;
+import au.edu.curtin.madgameassignment.Settings;
 
 
 public class MapActivity extends AppCompatActivity
 {
     private Selector fragSel;
     private MapFragment fragMap;
+    private Settings settings;
+    private GameData map;
+
+    //Game status fields
+    int money;
+    int population;
+
+    //Callbacks
+    private Button demolishButton, infoButton;
+    private TextView timeText, populationText, moneyText,  employmentText, incomeText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
+        String insert;
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
+
         //Callbacks
-        final Button demolishButton = (Button)findViewById(R.id.demolishButton);
-        final Button infoButton = (Button)findViewById(R.id.infoButton);
+        demolishButton  = (Button)findViewById(R.id.demolishButton);
+        infoButton      = (Button)findViewById(R.id.infoButton);
+        timeText        = (TextView)findViewById(R.id.timeText);
+        populationText  = (TextView)findViewById(R.id.populationText);
+        moneyText       = (TextView)findViewById(R.id.moneyText);
+        employmentText  = (TextView)findViewById(R.id.employmentText);
+        incomeText      = (TextView)findViewById(R.id.incomeText);
 
         //Fragments
         FragmentManager fm = getSupportFragmentManager();
@@ -48,6 +69,29 @@ public class MapActivity extends AppCompatActivity
             fragMap.setSelector(fragSel);
             fm.beginTransaction().add(R.id.map, fragMap).commit();
         }
+
+        //Retrieve settings to start game
+        settings = new Settings();
+        settings.load(getApplicationContext());
+
+        map = GameData.get();
+
+        //Time
+
+
+        //Population
+
+
+        //Money
+        money = map.getMoney();
+        insert = "Money: " + String.valueOf(money);
+        moneyText.setText(insert);
+
+        //Employment
+
+
+        //Income
+
 
         demolishButton.setOnClickListener(new View.OnClickListener()
         {
@@ -73,7 +117,6 @@ public class MapActivity extends AppCompatActivity
 
                     fragMap.setChoice(MapFragment.DEMOLISH);
                     demolishButton.setBackgroundColor(Color.RED);
-
                 }
             }
         });
@@ -106,6 +149,16 @@ public class MapActivity extends AppCompatActivity
             }
         });
 
+    }
+
+    public void spend(int cost)
+    {
+        String insert;
+
+        money = (money - cost);
+        map.setMoney(money);
+        insert = "Money: " + money;
+        moneyText.setText(insert);
     }
 
     public static Intent getIntent(Context c)

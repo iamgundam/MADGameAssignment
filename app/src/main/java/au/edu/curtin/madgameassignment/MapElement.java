@@ -1,7 +1,9 @@
 package au.edu.curtin.madgameassignment;
 
 
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.provider.MediaStore;
 
 public class MapElement
 {
@@ -45,4 +47,5 @@ public class MapElement
     {
         this.customImage = customImage;
     }
+
 }

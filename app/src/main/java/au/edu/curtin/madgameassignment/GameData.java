@@ -1,22 +1,26 @@
 package au.edu.curtin.madgameassignment;
 
-public class MapData
+public class GameData
 {
+    private int height;
+    private int width;
     private MapElement[][] grid;
+    private int money;
     private boolean update; //Set by SettingsActivity when an update to map is required
 
-    private static MapData instance = null;
+    private static GameData instance = null;
+    private Settings settings;
 
-    public static MapData get()
+    public static GameData get()
     {
         if(instance == null)
         {
-            instance = new MapData(10, 50);
+            instance = new GameData(10, 50, 1000);
         }
         return instance;
     }
 
-    private MapData(int h, int w)
+    private GameData(int h, int w, int money)
     {
         update = false;
         grid = new MapElement[h][w];
@@ -29,11 +33,16 @@ public class MapData
                 grid[ii][jj] = new MapElement(null, null);
             }
         }
+
+        //Set class fields
+        height = h;
+        width = w;
+        this.money = money;
     }
 
-    public void changeMapSize(int h, int w)
+    public void restartGame(int h, int w, int money)
     {
-        instance = new MapData(h, w);
+        instance = new GameData(h, w, money);
     }
 
     public MapElement get(int i, int j)
@@ -52,5 +61,24 @@ public class MapData
         this.update = update;
     }
 
+    public int getMoney()
+    {
+        return money;
+    }
+
+    public void setMoney(int money)
+    {
+        this.money = money;
+    }
+
+    public int getWidth()
+    {
+        return width;
+    }
+
+    public int getHeight()
+    {
+        return height;
+    }
 }
 

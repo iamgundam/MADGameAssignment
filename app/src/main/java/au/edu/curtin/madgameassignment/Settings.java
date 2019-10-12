@@ -124,5 +124,38 @@ public class Settings
         return salary;
     }
 
+    public int getFamilySize()
+    {
+        return familySize;
+    }
 
+    public int getShopSize()
+    {
+        return shopSize;
+    }
+
+    public int getServiceCost()
+    {
+        return serviceCost;
+    }
+
+    public double getTax()
+    {
+        return tax;
+    }
+
+    public int getHouseCost()
+    {
+        return houseCost;
+    }
+
+    public int getCommercialCost()
+    {
+        return commercialCost;
+    }
+
+    public int getRoadCost()
+    {
+        return roadCost;
+    }
 }

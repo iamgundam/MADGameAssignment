@@ -10,7 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import au.edu.curtin.madgameassignment.MapData;
+import au.edu.curtin.madgameassignment.GameData;
 import au.edu.curtin.madgameassignment.R;
 import au.edu.curtin.madgameassignment.Settings;
 
@@ -71,7 +71,7 @@ public class SettingsActivity extends AppCompatActivity
 
                 //Notify database and map for an update.
                 settings.update();
-                MapData.get().setUpdate(true);
+                GameData.get().setUpdate(true);
 
                 //Return to title.
                 onBackPressed();

@@ -1,10 +1,8 @@
 package au.edu.curtin.madgameassignment;
 
-import android.content.Context;
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.media.Image;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -12,20 +10,22 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 
 import au.edu.curtin.madgameassignment.activity.InfoActivity;
+import au.edu.curtin.madgameassignment.activity.MapActivity;
 
 public class MapFragment extends Fragment
 {
     private Selector selector;
     private Settings settings;
     private int choice;
+    private AdapterMap adapter;
 
     public static final int BUILD = 0;
     public static final int DEMOLISH = 1;
     public static final int INFO = 2;
+    public static final int REFRESH = 3;
 
     @Override
     public void onCreate(Bundle b)
@@ -34,7 +34,6 @@ public class MapFragment extends Fragment
         settings = new Settings();
         settings.load(getActivity());
         choice = BUILD; //Default choice
-
     }
 
     @Override
@@ -51,12 +50,12 @@ public class MapFragment extends Fragment
         ));
 
         //Ready data
-        MapData map = MapData.get();
+        GameData map = GameData.get();
 
-        //Restart the game if settings have been changed.
+        //Restart game if settings were changed
         if(map.hasUpdate())
         {
-            map.changeMapSize(settings.getMapH(), settings.getMapW());
+            map.restartGame(settings.getMapH(), settings.getMapW(), settings.getInitialMoney());
         }
 
         AdapterMap adapter = new AdapterMap();
@@ -66,14 +65,15 @@ public class MapFragment extends Fragment
         return view;
     }
 
-    private class AdapterMap extends RecyclerView.Adapter<MapViewHolder>
+    public class AdapterMap extends RecyclerView.Adapter<MapViewHolder>
     {
-        private MapData data;
+        private GameData data;
 
         public AdapterMap()
         {
             super();
-            data = MapData.get();
+            data = GameData.get();
+            adapter = this; //MapFragment class field to refresh on activity result
         }
 
         @Override
@@ -96,6 +96,7 @@ public class MapFragment extends Fragment
             int col = index / settings.getMapH();
             vh.bind(data, row, col);
         }
+
     }
 
     private class MapViewHolder extends RecyclerView.ViewHolder
@@ -106,14 +107,13 @@ public class MapFragment extends Fragment
         {
             super(li.inflate(R.layout.grid_cell, parent, false));
 
-
             int size = parent.getMeasuredHeight() / settings.getMapH() +1;
             ViewGroup.LayoutParams lp = itemView.getLayoutParams();
             lp.width = size;
             lp.height = size;
         }
 
-        public void bind(MapData data, int row, int col)
+        public void bind(GameData data, int row, int col)
         {
             Structure building;
             Bitmap custom;
@@ -171,8 +171,9 @@ public class MapFragment extends Fragment
                 public void build()
                 {
                     Structure selected;
-                    MapData data = MapData.get();
+                    GameData data = GameData.get();
                     MapElement current = data.get(frow, fcol);
+                    MapActivity mapActivity = (MapActivity)getActivity();
 
                     //Default selection is build, have to check if structure has been selected
                     //Must also check if existing structure on tile, can only build on empty space
@@ -188,14 +189,27 @@ public class MapFragment extends Fragment
                                 structure.setImageResource(selected.getDrawableId());
                                 current.setStructure(selected);
                                 current.setOwnerName(selected.getLabel());
+
+                                //Check label for either commercial or residential for cost.
+                                if(selected.getLabel().equals("Commercial"))
+                                {
+                                    mapActivity.spend(settings.getCommercialCost());
+                                }
+                                else
+                                {
+                                    mapActivity.spend(settings.getHouseCost());
+                                }
+
                             }
+                            //Else, cannot build! Do nothing.
                         }
-                        //Else, if there is no structure currently here, build the road.
-                        else if(current.getStructure() == null)
+                        //Else build a road.
+                        else
                         {
                             structure.setImageResource(selected.getDrawableId());
                             current.setStructure(selected);
                             current.setOwnerName(selected.getLabel());
+                            mapActivity.spend(settings.getRoadCost());
                         }
                     }
                 }//end build
@@ -204,7 +218,7 @@ public class MapFragment extends Fragment
                 public void demolish()
                 {
                     Structure selected;
-                    MapData data = MapData.get();
+                    GameData data = GameData.get();
                     MapElement current = data.get(frow, fcol);
 
                     if(current.getStructure() != null)
@@ -218,6 +232,7 @@ public class MapFragment extends Fragment
                                 structure.setImageResource(StructureData.DRAWABLES[0]);
                                 current.setStructure(null);
                                 current.setOwnerName(null);
+                                current.setCustomImage(null);
                             }
                             //Else, do not delete.
                         }
@@ -226,6 +241,7 @@ public class MapFragment extends Fragment
                             structure.setImageResource(StructureData.DRAWABLES[0]);
                             current.setStructure(null);
                             current.setOwnerName(null);
+                            current.setCustomImage(null);
                         }
 
                     }
@@ -234,19 +250,21 @@ public class MapFragment extends Fragment
                 //Starts info activity and sends the tile information.
                 public void info()
                 {
-                    MapData data = MapData.get();
+                    GameData data = GameData.get();
 
                     //Check if structure exists to retrieve info on.
                     if(data.get(frow, fcol).getStructure() != null)
                     {
-                        startActivity(InfoActivity.getIntent(getContext(), frow, fcol));
+                        //On result received, refresh map.
+                        startActivityForResult(InfoActivity.getIntent(getContext(), frow, fcol),
+                                                REFRESH);
                     }
                 }
 
                 //Check whether the surrounding tiles have a road.
                 public boolean hasAdjacentRoad()
                 {
-                    MapData data = MapData.get();
+                    GameData data = GameData.get();
                     MapElement adj;
                     boolean valid;
 
@@ -315,7 +333,7 @@ public class MapFragment extends Fragment
                 //Check whether the surrounding tiles have a Commercial or Residential building.
                 public boolean hasAdjacentBuilding()
                 {
-                    MapData data = MapData.get();
+                    GameData data = GameData.get();
                     MapElement adj;
                     boolean valid;
 
@@ -393,6 +411,16 @@ public class MapFragment extends Fragment
 
         }
 
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent resultIntent)
+    {
+        if(resultCode == Activity.RESULT_OK && requestCode == REFRESH)
+        {
+            adapter.notifyDataSetChanged();
+        }
     }
 
     public void setSelector(Selector selector)
