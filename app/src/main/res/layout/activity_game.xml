@@ -50,6 +50,16 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toLeftOf="@id/demolishButton" />
 
+    <Button
+        android:id="@+id/timeButton"
+        android:layout_width="77dp"
+        android:layout_height="77dp"
+        android:layout_marginBottom="80dp"
+        android:background="@android:color/darker_gray"
+        android:text="TIME"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/infoButton" />
+
     <TextView
         android:id="@+id/timeText"
         android:layout_width="wrap_content"
@@ -108,5 +118,21 @@
         app:layout_constraintStart_toEndOf="@+id/timeText"
         app:layout_constraintTop_toBottomOf="@id/map"
         tools:layout_editor_absoluteY="575dp" />
+
+    <TextView
+        android:id="@+id/overText"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@android:color/holo_red_dark"
+        android:text="Game Over!"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:visibility="invisible"
+        android:gravity="center"
+        app:layout_constraintBottom_toTopOf="@id/selector"
+        app:layout_constraintTop_toBottomOf="@id/map"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/timeButton"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="574dp" />
 
 </android.support.constraint.ConstraintLayout>

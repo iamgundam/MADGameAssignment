@@ -34,16 +34,15 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View view)
             {
                 GameData game = GameData.get();
-                if(false) //saved game state from previous session
+                if(false) //Resume saved game state from previous session
                 {
 
                 }
                 else
                 {
-                    //Load from stored settings or update from new settings
-                    if(!isStarted || game.hasUpdate())
+                    //Start new game from stored settings.
+                    if(!isStarted)
                     {
-                        //New game from stored settings
                         game.restartGame(settings.getMapH(), settings.getMapW(), settings.getInitialMoney());
                     }
                 }

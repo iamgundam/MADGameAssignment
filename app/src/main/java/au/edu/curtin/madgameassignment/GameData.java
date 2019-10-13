@@ -5,11 +5,15 @@ public class GameData
     private int height;
     private int width;
     private MapElement[][] grid;
+
+    //Game stats
+    private int time;
     private int money;
-    private boolean update; //Set by SettingsActivity when an update to map is required
+    private int nResidential;
+    private int nCommercial;
+    private boolean isOver; //True or false for "game over" state
 
     private static GameData instance = null;
-    private Settings settings;
 
     public static GameData get()
     {
@@ -20,9 +24,8 @@ public class GameData
         return instance;
     }
 
-    private GameData(int h, int w, int money)
+    private GameData(int h, int w, int inMoney)
     {
-        update = false;
         grid = new MapElement[h][w];
 
         //Fill new map with empty grass blocks
@@ -37,13 +40,20 @@ public class GameData
         //Set class fields
         height = h;
         width = w;
-        this.money = money;
+        money = inMoney;
+        nResidential = 0;
+        nCommercial = 0;
+        isOver = false;
+
+        instance = this;
     }
 
-    public void restartGame(int h, int w, int money)
+    public void restartGame(int h, int w, int inMoney)
     {
-        instance = new GameData(h, w, money);
+        instance = new GameData(h, w, inMoney);
     }
+
+    //Getters and setters --------------------------------------------------------------------------
 
     public MapElement get(int i, int j)
             throws ArrayIndexOutOfBoundsException
@@ -51,24 +61,54 @@ public class GameData
         return grid[i][j];
     }
 
-    public boolean hasUpdate()
+    public int getTime()
     {
-        return update;
+        return time;
     }
 
-    public void setUpdate(boolean update)
+    public void setTime(int time)
     {
-        this.update = update;
+        this.time = time;
     }
 
     public int getMoney()
     {
-        return money;
+        return instance.money;
     }
 
     public void setMoney(int money)
     {
-        this.money = money;
+        instance.money = money;
+    }
+
+    public int getnCommercial()
+    {
+        return nCommercial;
+    }
+
+    public void setnCommercial(int nCommercial)
+    {
+        this.nCommercial = nCommercial;
+    }
+
+    public int getnResidential()
+    {
+        return nResidential;
+    }
+
+    public void setnResidential(int nResidential)
+    {
+        this.nResidential = nResidential;
+    }
+
+    public boolean isOver()
+    {
+        return isOver;
+    }
+
+    public void setOver(boolean over)
+    {
+        isOver = over;
     }
 
     public int getWidth()

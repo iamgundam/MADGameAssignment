@@ -52,12 +52,6 @@ public class MapFragment extends Fragment
         //Ready data
         GameData map = GameData.get();
 
-        //Restart game if settings were changed
-        if(map.hasUpdate())
-        {
-            map.restartGame(settings.getMapH(), settings.getMapW(), settings.getInitialMoney());
-        }
-
         AdapterMap adapter = new AdapterMap();
 
         rv.setAdapter(adapter);
@@ -149,20 +143,25 @@ public class MapFragment extends Fragment
                 @Override
                 public void onClick(View view)
                 {
+                    GameData data = GameData.get();
 
-                    switch(choice)
+                    //Do not respond to clicks on game over.
+                    if(!data.isOver())
                     {
-                        case BUILD:
-                            build();
-                        break;
+                        switch (choice)
+                        {
+                            case BUILD:
+                                build();
+                                break;
 
-                        case DEMOLISH:
-                            demolish();
-                        break;
+                            case DEMOLISH:
+                                demolish();
+                                break;
 
-                        case INFO:
-                            info();
-                        break;
+                            case INFO:
+                                info();
+                                break;
+                        }
                     }
 
                 }
@@ -185,20 +184,35 @@ public class MapFragment extends Fragment
                         {
                             if (hasAdjacentRoad())
                             {
-                                //Update grid image to structure, then update map[][].
-                                structure.setImageResource(selected.getDrawableId());
-                                current.setStructure(selected);
-                                current.setOwnerName(selected.getLabel());
-
                                 //Check label for either commercial or residential for cost.
                                 if(selected.getLabel().equals("Commercial"))
                                 {
-                                    mapActivity.spend(settings.getCommercialCost());
+                                    //Check for enough money.
+                                    if(mapActivity.hasMoney(settings.getCommercialCost()))
+                                    {
+                                        mapActivity.updateMoney(-settings.getCommercialCost());
+                                        mapActivity.updateCommercial(1);
+
+                                        //Update grid image to structure, then update map[][].
+                                        structure.setImageResource(selected.getDrawableId());
+                                        current.setStructure(selected);
+                                        current.setOwnerName(selected.getLabel());
+                                    }
                                 }
                                 else
                                 {
-                                    mapActivity.spend(settings.getHouseCost());
+                                    if(mapActivity.hasMoney(settings.getHouseCost()))
+                                    {
+                                        mapActivity.updateMoney(-settings.getHouseCost());
+                                        mapActivity.updateResidential(1);
+
+                                        //Update grid image to structure, then update map[][].
+                                        structure.setImageResource(selected.getDrawableId());
+                                        current.setStructure(selected);
+                                        current.setOwnerName(selected.getLabel());
+                                    }
                                 }
+
 
                             }
                             //Else, cannot build! Do nothing.
@@ -206,10 +220,15 @@ public class MapFragment extends Fragment
                         //Else build a road.
                         else
                         {
-                            structure.setImageResource(selected.getDrawableId());
-                            current.setStructure(selected);
-                            current.setOwnerName(selected.getLabel());
-                            mapActivity.spend(settings.getRoadCost());
+                            //Build if enough money.
+                            if(mapActivity.hasMoney(settings.getRoadCost()))
+                            {
+                                structure.setImageResource(selected.getDrawableId());
+                                current.setStructure(selected);
+                                current.setOwnerName(selected.getLabel());
+
+                                mapActivity.updateMoney(-settings.getRoadCost());
+                            }
                         }
                     }
                 }//end build
@@ -220,6 +239,7 @@ public class MapFragment extends Fragment
                     Structure selected;
                     GameData data = GameData.get();
                     MapElement current = data.get(frow, fcol);
+                    MapActivity mapActivity = (MapActivity)getActivity();
 
                     if(current.getStructure() != null)
                     {
@@ -236,8 +256,17 @@ public class MapFragment extends Fragment
                             }
                             //Else, do not delete.
                         }
-                        else //Simply delete the building.
+                        else //Simply delete the building and update nCount for its type.
                         {
+                            if(current.getStructure() instanceof Commercial)
+                            {
+                                mapActivity.updateCommercial(-1);
+                            }
+                            else
+                            {
+                                mapActivity.updateResidential(-1);
+                            }
+
                             structure.setImageResource(StructureData.DRAWABLES[0]);
                             current.setStructure(null);
                             current.setOwnerName(null);

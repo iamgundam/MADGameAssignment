@@ -69,9 +69,9 @@ public class SettingsActivity extends AppCompatActivity
                 settings.setInitialMoney(Integer.parseInt(moneyEntry.getText().toString()));
                 settings.setSalary(Integer.parseInt(salaryEntry.getText().toString()));
 
-                //Notify database and map for an update.
+                //Notify database and restart game.
                 settings.update();
-                GameData.get().setUpdate(true);
+                GameData.get().restartGame(settings.getMapH(), settings.getMapW(), settings.getInitialMoney());
 
                 //Return to title.
                 onBackPressed();
